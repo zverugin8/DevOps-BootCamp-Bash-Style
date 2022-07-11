@@ -27,8 +27,6 @@ def check_shellcheck(file):
     else:
         return issues.json()
 
-script_path = "./transfer_work.sh"
-
 def run_shell_test(script, *args):
 
     out = check_output([script] + list(args), universal_newlines=True)
