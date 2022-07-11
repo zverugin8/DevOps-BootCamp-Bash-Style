@@ -1,37 +1,39 @@
 import requests, tarfile, os
 from subprocess import check_output, CalledProcessError
+import json, filecmp
 
-
+API_URL = "https://www.shellcheck.net/shellcheck.php"
 script_path = "./game.sh"
 
-def download_shellcheck():
-    link = "https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.darwin.x86_64.tar.xz"
+def check_shellcheck(file):
 
-    r = requests.get(link, allow_redirects=True)
-    fname = 'shellcheck-v0.8.0.darwin.x86_64.tar.xz'
-    open(fname, 'wb').write(r.content)
-    tar = tarfile.open(fname, "r:xz")
+    with open(f"./{file}", "r") as f:
+        script = f.readlines()
+        script_lines = ''.join(script)
+        issues = requests.post(
+            API_URL,
+            data=f'script={script_lines}',
+            headers={
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
+        )
+    result = [' ']
+    if issues.json():
+        for issue in issues.json():
+            result.append(f"Line {issue['line']}:")
+            result.append(f"SC{issue['code']} ({issue['level']}): {issue['message']}")
+        return result
+    else:
+        return issues.json()
 
-    for member in tar.getmembers():
-        if member.isreg() and member.name.endswith('shellcheck'):
-            member.name = os.path.basename(member.name) # remove the path by reset it
-    tar.extract(member,'.') # extrac
-    tar.close()
-    return "./shellcheck"
+script_path = "./transfer_work.sh"
 
-binary_path = download_shellcheck()
+def run_shell_test(script, *args):
 
-def run_shell_test(script, arg1):
-    out = check_output([script, str(arg1)], universal_newlines=True)
-    return out.split("\n")[0]
+    out = check_output([script] + list(args), universal_newlines=True)
+    return out
 
 def test_shellcheck():
-    #result = run_shell_test(script_path, '1,2,3,4,5,6,7')
-    failed = False
-    try:
-        result = run_shell_test(binary_path, script_path)
-    except CalledProcessError as e:
-        failed = True
-        result = e.output
-    print(result)
-    assert failed == False
+    result = check_shellcheck(script_path)
+    assert result == []
