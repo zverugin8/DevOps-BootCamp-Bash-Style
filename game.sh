@@ -6,24 +6,22 @@
 echo -e "\n NumberJack \n"
 ch=0
 while [[ "$ch" -ne 3 ]]; do
-  echo  "  
+  echo "  
        PLAY : Hit 1 and enter.
        HELP : Hit 2 and enter.
        EXIT : Hit 3 and enter.
       "
   read -r -p "Enter your choice : " ch
-  if [[ "$ch" -eq 1 ]];then
-    x=0 
-    c=0 
+  if [[ "$ch" -eq 1 ]]; then
+    x=0
+    c=0
     p=0
     read -r -p "Enter any number between 0 and 9 : " n
-    while [[ "$c" -eq 0 ]]; do
-      x=11; 
-      r=() 
-      while IFS='' read -r line; do
-        r+=("$line")
-      done < <(shuf -i 0-9 -n 10)
-        echo "${r[@]}" 
+    while [[ $c -eq 0 ]]; do
+      x=11
+      r=()
+      mapfile -t r < <(shuf -i 0-9 -n 10)
+      echo "${r[@]}"
       for i in {1..10}; do
         a[i]=$i
       done
@@ -33,9 +31,9 @@ while [[ "$ch" -ne 3 ]]; do
         c=1
         break
       fi
-      if [[ "${r[(($x))-1]}" -eq "$n" ]]; then
+      if [[ "${r[(($x)) - 1]}" -eq "$n" ]]; then
         echo "Great"
-        ((p=p+1))
+        p=$( (p+1) )
       else
         c=1
         break
