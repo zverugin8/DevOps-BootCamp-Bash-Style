@@ -17,16 +17,16 @@ while [ "$ch" -ne 3 ]; do
         c=0 
         p=0
         read -r -p "Enter any number between 0 and 9 : " n
-        while [ $c -eq 0 ]; do
+      while [ $c -eq 0 ]; do
             x=11; 
             r=() 
-            while IFS='' read -r line; do
+          while IFS='' read -r line; do
                 r+=("$line")
-            done < <(shuf -i 0-9 -n 10)
+          done < <(shuf -i 0-9 -n 10)
             echo "${r[@]}" 
-            for i in {1..10}; do
+          for i in {1..10}; do
                 a[i]=$i
-            done
+          done
             echo "${a[@]}"
             read -r -t 5 -p "Enter the index of your number : " x
             if [[ $? -gt 128 ]]; then
@@ -40,7 +40,7 @@ while [ "$ch" -ne 3 ]; do
                 c=1
                 break
             fi
-        done
+      done
     elif [ "$ch" -eq 2 ]; then
         echo "HELP: INSTRUCTIONS TO PLAY THE GAME. "
     else
